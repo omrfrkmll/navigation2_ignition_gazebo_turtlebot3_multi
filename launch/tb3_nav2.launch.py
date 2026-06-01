@@ -24,7 +24,6 @@ from launch.actions import (
     IncludeLaunchDescription,
     LogInfo
 )
-from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -124,8 +123,6 @@ def generate_launch_description():
             }.items()
         )
 
-        rviz_enable = LaunchConfiguration('rviz', default='true')
-
         rviz_node = Node(
             package='rviz2',
             executable='rviz2',
@@ -137,8 +134,7 @@ def generate_launch_description():
                 ('/tf', f'tf'),
                 ('/tf_static', f'tf_static')
             ],
-            output='screen',
-            condition=IfCondition(rviz_enable)
+            output='screen'
         )
 
         ld.add_action(nav2_launch)
