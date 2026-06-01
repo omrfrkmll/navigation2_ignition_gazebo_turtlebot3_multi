@@ -24,10 +24,11 @@ from launch.actions import (
     IncludeLaunchDescription,
     LogInfo
 )
+from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from multi_robot_scripts.utils import generate_rviz_config
+from multi_robot_scripts.utils import generate_rviz_config, create_namespaced_nav2_params
 
 def generate_launch_description():
     # ───── Set up paths and environment ────────────────────────────────────────
@@ -61,11 +62,18 @@ def generate_launch_description():
         description='Use simulation (Gazebo) clock if true.'
     )
 
+    declare_slam_arg = DeclareLaunchArgument(
+        'slam',
+        default_value='False',
+        description='Run SLAM if true.'
+    )
+
     # Create main launch description
     ld = LaunchDescription()
     ld.add_action(declare_map_arg)
     ld.add_action(declare_params_arg)
     ld.add_action(declare_sim_time_arg)
+    ld.add_action(declare_slam_arg)
 
     # Load robot configurations
     with open(robot_config_path, 'r') as f:
@@ -80,9 +88,23 @@ def generate_launch_description():
         robot_name = robot['name']
         namespace = f'/{robot_name}'
 
+        # Extract pose from robots.yaml
+        x_pose = robot.get('x_pose', '0.0')
+        y_pose = robot.get('y_pose', '0.0')
+        z_pose = robot.get('z_pose', '0.01')
+        yaw_pose = robot.get('yaw_pose', '0.0')
+
+        namespaced_params = create_namespaced_nav2_params(
+            param_file_path, 
+            robot_name,
+            x=x_pose,
+            y=y_pose,
+            z=z_pose,
+            yaw=yaw_pose
+        )
         rviz_config = generate_rviz_config(robot_name, rviz_template_path)
 
-        ld.add_action(LogInfo(msg=['[Launch] Using param file: ', params_path]))
+        ld.add_action(LogInfo(msg=['[Launch] Using namespaced param file with initial pose: ', namespaced_params]))
 
         nav2_launch = IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -95,11 +117,14 @@ def generate_launch_description():
             launch_arguments={
                 'map': map_path,
                 'use_sim_time': use_sim_time,
-                'params_file': params_path,
+                'params_file': namespaced_params,
                 'use_namespace': 'true',
-                'namespace': robot_name
+                'namespace': robot_name,
+                'slam': LaunchConfiguration('slam')
             }.items()
         )
+
+        rviz_enable = LaunchConfiguration('rviz', default='true')
 
         rviz_node = Node(
             package='rviz2',
@@ -112,7 +137,8 @@ def generate_launch_description():
                 ('/tf', f'tf'),
                 ('/tf_static', f'tf_static')
             ],
-            output='screen'
+            output='screen',
+            condition=IfCondition(rviz_enable)
         )
 
         ld.add_action(nav2_launch)

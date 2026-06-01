@@ -99,6 +99,28 @@ def load_sdf_with_namespace(model_path, namespace):
 """
 This function generates a namespaced RViz configuration file for a TurtleBot3 robot.
 """
+def create_namespaced_nav2_params(base_yaml_path, namespace, x=0.0, y=0.0, z=0.0, yaw=0.0):
+    """Create a temporary namespaced Nav2 params YAML by replacing placeholders."""
+    with open(base_yaml_path, 'r') as f:
+        content = f.read()
+
+    # Replace the placeholders
+    ns = namespace.strip('/')
+    content = content.replace('<robot_namespace>', ns)
+    content = content.replace('<initial_pose_x>', str(x))
+    content = content.replace('<initial_pose_y>', str(y))
+    content = content.replace('<initial_pose_z>', str(z))
+    content = content.replace('<initial_pose_yaw>', str(yaw))
+
+    # Use system temp directory
+    temp_dir = tempfile.gettempdir()
+    output_path = os.path.join(temp_dir, f'{ns}_nav2_params.yaml')
+
+    with open(output_path, 'w') as f:
+        f.write(content)
+
+    return output_path
+
 def generate_rviz_config(robot_name, base_config_path):
     # Read the base RViz config
     with open(base_config_path, 'r') as f:

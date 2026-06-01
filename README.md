@@ -1,25 +1,30 @@
 
-# Multi-TurtleBot3 Simulation with ROS 2 Jazzy & Gazebo Harmonic
-This repository provides a scalable ROS 2-based framework to simulate multiple TurtleBot3 robots in Gazebo with Navigation2 (Nav2) support. Each robot runs within its own namespace, enabling clean separation and interaction-free operation.
+# Navigation2 Ignition Gazebo TurtleBot3 Multi (ROS 2 Humble)
 
-The 'master' branch is updated with Jazzy support.  The 'humble' branch includes an implementation that functions with the humble framework, while the 'foxy' branch provides support specifically for ROS2 Foxy.
+This repository provides a scalable ROS 2 Humble framework to simulate multiple TurtleBot3 robots in **Gazebo Sim (Ignition/Harmonic)** with Navigation2 (Nav2) support. Each robot runs within its own namespace, enabling clean separation and interaction-free operation.
 
-## Branch Mapping
-'master' -> ROS2 Jazzy
+This project is a modernized re-implementation of the multi-robot concept, specifically backported and optimized for ROS 2 Humble using the latest Gazebo Sim architecture.
 
-'humble' -> ROS2 Humble
+## 📜 Credits & Acknowledgments
+This project is based on and inspired by the excellent work of **Arshad Mehmood**. 
+Original Repository: [arshadlab/tb3_multi_robot](https://github.com/arshadlab/tb3_multi_robot)
 
-'foxy' -> ROS2 Foxy
+We have refactored the original `ament_cmake` structure into a more flexible `ament_python` implementation and added support for modern Gazebo Harmonic on ROS 2 Humble.
 
-The Jazzy version features a streamlined multi-robot setup that improves usability and launch flexibility.
+## 🚀 Key Features
+- **ROS 2 Humble** & **Gazebo Harmonic** support.
+- Scalable multi-robot setup using YAML configuration.
+- Simplified `ament_python` build system.
+- Full Navigation2 integration with namespacing.
+- Improved RViz visualization with robot-specific labels.
 
 ## Prerequisites
 
-- **Operating System**: Ubuntu 24.04
-- **ROS Version**: [ROS 2 Jazzy](https://docs.ros.org/en/jazzy/Installation.html)
-- **Gazebo Version**: Gazebo Harmonic
+- **Operating System**: Ubuntu 22.04 (Jammy Jellyfish)
+- **ROS Version**: [ROS 2 Humble](https://docs.ros.org/en/humble/Installation.html)
+- **Gazebo Version**: Gazebo Harmonic (Ignition)
 
-Refer to the official ROS2 Jazzy installation guide: [link](https://docs.ros.org/en/jazzy/Installation.html)
+Refer to the official ROS2 Humble installation guide: [link](https://docs.ros.org/en/humble/Installation.html)
 
 ### Install Required Dependencies
 
@@ -30,8 +35,8 @@ apt-get update && apt-get install -y \
     python3-rosdep \
     python3-vcstool \
     curl \
-    ros-jazzy-rmw-implementation \
-    ros-jazzy-rmw-cyclonedds-cpp
+    ros-humble-rmw-implementation \
+    ros-humble-rmw-cyclonedds-cpp
 ```
 
 When launching multiple robots with Nav2, the number of DDS participants can quickly exceed the default limit set by CycloneDDS. To avoid participant ID exhaustion, create a configuration file to increase the allowable range:
@@ -56,32 +61,32 @@ export CYCLONEDDS_URI=$HOME/cyclonedds.xml
 ## Setup Workspace and Clone Repository
 
 ```
-$ mkdir -p robot_ws/src
-$ cd robot_ws/src
+mkdir -p robot_ws/src
+cd robot_ws/src
 
-# Clone the master branch of the multi-robot repo
-$ git clone  https://github.com/arshadlab/tb3_multi_robot.git -b master
+# Clone the repository
+git clone https://github.com/omrfrkmll/navigation2_ignition_gazebo_turtlebot3_multi.git src/tb3_multi_robot
 
 # Initialize the workspace
-$ cd robot_ws
-$ source /opt/ros/jazzy/setup.bash
-$ rosdep install --from-paths src -r -y
+cd robot_ws
+source /opt/ros/humble/setup.bash
+rosdep install --from-paths src -r -y
 ```
 
  It's recommended to download the default model assets to ensure proper rendering and simulation behavior.
 
 ```
-$ mkdir -p ~/.gazebo/models
-$ git clone https://github.com/osrf/gazebo_models ~/.gazebo/models
+mkdir -p ~/.gazebo/models
+git clone https://github.com/osrf/gazebo_models ~/.gazebo/models
 ```
 
 ## 🔧 Build the Workspace
 After installing dependencies and setting up the workspace, compile the ROS 2 packages using colcon:
 
 ```
-$ cd robot_ws/
-$ colcon build --symlink-install
-$ source ./install/setup.bash
+cd robot_ws/
+colcon build --symlink-install
+source ./install/setup.bash
 ```
 
 Then, update the config/robots.yaml file to define the robot setup.
@@ -91,7 +96,7 @@ By default, four robots (tb1, tb2, tb3, tb4) are listed, with only tb1 and tb3 e
 Use the following command to start the Gazebo simulation with the configured TurtleBot3 robots:
 
 ```
-$ ros2 launch tb3_multi_robot tb3_world.launch.py
+ros2 launch tb3_multi_robot tb3_world.launch.py
 ```
 <img width="1840" height="1004" alt="image" src="https://github.com/user-attachments/assets/68d08e6a-8ab6-4f3d-98b3-504102b96312" />
 
@@ -106,7 +111,7 @@ To launch the driving node for each robot, use the command below.
 While a drive.launch.py file is included for automated multi-robot support, it is still under development and may require manual execution for each robot.
 
 ```
-$ ./install/tb3_multi_robot/bin/turtlebot3_drive --ros-args -r __ns:=/tb1
+./install/tb3_multi_robot/bin/turtlebot3_drive --ros-args -r __ns:=/tb1
 ```
 
 Replace /tb1 with the appropriate robot namespace (/tb2, /tb3, etc.) as defined in robot configuration.
@@ -116,7 +121,7 @@ Replace /tb1 with the appropriate robot namespace (/tb2, /tb3, etc.) as defined 
 With the robots running in Gazebo (via tb3_world.launch.py), the Navigation2 (Nav2) stack can be launched from a separate terminal.
 
 ```
-$ ros2 launch  tb3_multi_robot tb3_nav2.launch.py
+ros2 launch  tb3_multi_robot tb3_nav2.launch.py
 ```
 This will launch Nav2 nodes for all enabled robots using their respective namespaces.
 
@@ -134,7 +139,7 @@ Alternatively, the initial pose can be set programmatically via the command line
 To retrieve the live pose of robots from Gazebo Harmonic, run:
 
 ```
-$ gz topic -e -t /world/default/pose/info
+gz topic -e -t /world/default/pose/info
 ```
 This command lists the poses of all simulated entities. Identify the target robot by its name, such as tb1_waffle or tb1_burger.
 
@@ -143,7 +148,7 @@ Below commands are given for included robots.  User will need to update them for
 
 ```
 # TB1
-$ ros2 topic pub --once /tb1/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
+ros2 topic pub --once /tb1/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
   frame_id: 'map'
 pose:
   pose:
@@ -157,7 +162,7 @@ pose:
                0, 0, 0, 0, 0, 0.06853892]"
                
 # TB2
-$ ros2 topic pub --once /tb2/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
+ros2 topic pub --once /tb2/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
   frame_id: 'map'
 pose:
   pose:
@@ -171,7 +176,7 @@ pose:
                0, 0, 0, 0, 0, 0.06853892]"
    
 # TB3
-$ ros2 topic pub --once /tb3/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
+ros2 topic pub --once /tb3/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
   frame_id: 'map'
 pose:
   pose:
@@ -185,7 +190,7 @@ pose:
                0, 0, 0, 0, 0, 0.06853892]"
   
 # TB4
-$ ros2 topic pub --once /tb4/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
+ros2 topic pub --once /tb4/initialpose geometry_msgs/msg/PoseWithCovarianceStamped "header:
   frame_id: 'map'
 pose:
   pose:
@@ -210,7 +215,7 @@ Alternatively, goals can be sent programmatically via the command line using ROS
 Below is an example command for setting a goal for tb1:
 
 ```
-$ ros2 action send_goal /tb1/navigate_to_pose nav2_msgs/action/NavigateToPose \
+ros2 action send_goal /tb1/navigate_to_pose nav2_msgs/action/NavigateToPose \
 '{
   pose: {
     header: {
@@ -247,16 +252,16 @@ rqt --ros-args -r __ns:=/tb1 -r /tf:=tf -r /tf_static:=tf_static
 
 
 ## 🐳 Running via Dockers
-A Dockerfile is provided to simplify the setup and execution of multi-robot simulation using ROS 2 Jazzy. This enables running the project even on systems other than Ubuntu 24.04 (e.g. Ubuntu 22.04) without requiring ROS installation on the host. The Docker image includes all necessary dependencies preconfigured.
+A Dockerfile is provided to simplify the setup and execution of multi-robot simulation using ROS 2 Humble. This enables running the project even on systems other than Ubuntu 22.04 (e.g. Ubuntu 20.04) without requiring ROS installation on the host. The Docker image includes all necessary dependencies preconfigured.
 
 ### 🛠️ Build Docker image
 
 Clone the repository and build the Docker image:
 
 ```
-$ git clone  https://github.com/arshadlab/tb3_multi_robot.git -b jazzy
-$ cd docker
-$ docker build -t tb3_multi_robot:jazzy .
+git clone https://github.com/omrfrkmll/navigation2_ignition_gazebo_turtlebot3_multi.git
+cd navigation2_ignition_gazebo_turtlebot3_multi/docker
+docker build -t navigation2_ignition_gazebo_turtlebot3_multi:humble .
 ```
 
 This will build container and also clone and build the repo in /opt/ros2_ws.
@@ -266,14 +271,14 @@ This will build container and also clone and build the repo in /opt/ros2_ws.
 Run the container and launch the Gazebo simulation:
 
 ```
-$ docker run -it --rm \
+docker run -it --rm \
   --user $(id -u):$(id -g) \
   --name tb3sim \
   --env="DISPLAY=$DISPLAY" \
   --env="QT_X11_NO_MITSHM=1" \
   --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
   --volume="/dev/dri:/dev/dri" \
-  tb3_multi_robot:jazzy \
+  navigation2_ignition_gazebo_turtlebot3_multi:humble \
   ros2 launch tb3_multi_robot tb3_world.launch.py
 ```
 
@@ -285,7 +290,7 @@ Ensure the command `xhost +local:docker` is executed on the host system to permi
 After the robots are active, open a new terminal and run:
 
 ```
-$ docker exec -it tb3sim bash -c "
+docker exec -it tb3sim bash -c "
   source /opt/ros2_ws/install/setup.bash && \
   ros2 launch tb3_multi_robot tb3_nav2.launch.py
 "
@@ -298,7 +303,7 @@ This launches the Nav2 stack inside the already running container.
 To build and run the multi-robot demo using a local (host-cloned) repository inside the Docker environment, mount the host directory into the container. Note that the default /opt/ros2_ws workspace inside the container will not be used in this case.
 
 ```
-$ docker run -it --rm \
+docker run -it --rm \
   --user $(id -u):$(id -g) \
   --name tb3sim \
   --env="DISPLAY=$DISPLAY" \
@@ -306,7 +311,7 @@ $ docker run -it --rm \
   --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
   --volume="/dev/dri:/dev/dri" \
   --volume="<absolute path of local project/workspace>:/robot_ws" \
-  tb3_multi_robot:jazzy \
+  navigation2_ignition_gazebo_turtlebot3_multi:humble \
   bash
 ```
 Note: Replace < absolute path to local project/workspace > with the full path to the cloned tb3_multi_robot directory on the host system.
@@ -316,7 +321,7 @@ This will open an interactive shell. Navigate to /robot_ws inside the container 
 To access the running container from another terminal, use:
 
 ```
-$ docker exec -it tb3sim bash
+docker exec -it tb3sim bash
 ```
 
 Note: By default, this will place the shell in /opt/ros2_ws. Change directory to /robot_ws manually and source ./install/setup.bash from there.

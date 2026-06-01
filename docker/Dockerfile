@@ -1,9 +1,9 @@
-# Base image with ROS 2 Jazzy Desktop
-FROM osrf/ros:jazzy-desktop-full
+# Base image with ROS 2 Humble Desktop
+FROM osrf/ros:humble-desktop-full
 
 # Environment setup
 ENV DEBIAN_FRONTEND=noninteractive
-ENV ROS_DISTRO=jazzy
+ENV ROS_DISTRO=humble
 
 # Install basic build dependencies and tools
 RUN apt-get update && apt-get install -y \
@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
     python3-rosdep \
     python3-vcstool \
     curl \
-    ros-jazzy-rmw-implementation \
-    ros-jazzy-rmw-cyclonedds-cpp \
+    ros-humble-rmw-implementation \
+    ros-humble-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Create your CycloneDDS config file

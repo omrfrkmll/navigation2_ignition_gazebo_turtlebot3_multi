@@ -1,5 +1,6 @@
 amcl:
   ros__parameters:
+    use_sim_time: True
     alpha1: 0.2
     alpha2: 0.2
     alpha3: 0.2
@@ -36,7 +37,7 @@ amcl:
     z_max: 0.05
     z_rand: 0.5
     z_short: 0.05
-    scan_topic: <robot_namespace>/scan
+    scan_topic: /<robot_namespace>/scan
     map_topic: /map
     set_initial_pose: false
     always_reset_initial_pose: false
@@ -49,6 +50,7 @@ amcl:
 
 bt_navigator:
   ros__parameters:
+    use_sim_time: True
     global_frame: map
     robot_base_frame: base_link
     transform_tolerance: 0.5
@@ -61,9 +63,9 @@ bt_navigator:
     path_blackboard_id: path
     navigators: ['navigate_to_pose', 'navigate_through_poses']
     navigate_to_pose:
-      plugin: "nav2_bt_navigator::NavigateToPoseNavigator"
+      plugin: "nav2_bt_navigator/NavigateToPoseNavigator"
     navigate_through_poses:
-      plugin: "nav2_bt_navigator::NavigateThroughPosesNavigator"
+      plugin: "nav2_bt_navigator/NavigateThroughPosesNavigator"
     error_code_name_prefixes:
       - assisted_teleop
       - backup
@@ -80,9 +82,10 @@ bt_navigator:
 
 docking_server:
   ros__parameters:
+    use_sim_time: True
     dock_plugins: ['nova_carter_dock']
     nova_carter_dock:
-      plugin: 'opennav_docking::SimpleChargingDock'
+      plugin: 'opennav_docking/SimpleChargingDock'
     docks: ['home_dock','flex_dock1', 'flex_dock2']
     home_dock:
       type: 'nova_carter_dock'
@@ -96,10 +99,11 @@ docking_server:
       type: 'nova_carter_dock'
       frame: map
       pose: [30.0, 30.0, 0.0]
-    enable_stamped_cmd_vel: true
+    enable_stamped_cmd_vel: false
 
 controller_server:
   ros__parameters:
+    use_sim_time: True
     controller_frequency: 10.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.001
@@ -158,11 +162,12 @@ controller_server:
       RotateToGoal.scale: 32.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
-    enable_stamped_cmd_vel: true
+    enable_stamped_cmd_vel: false
 
 local_costmap:
   local_costmap:
     ros__parameters:
+      use_sim_time: True
       update_frequency: 5.0
       publish_frequency: 2.0
       global_frame: odom
@@ -182,7 +187,7 @@ local_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: <robot_namespace>/scan
+          topic: /<robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -198,7 +203,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: <robot_namespace>/scan
+          topic: /<robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -214,6 +219,7 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
+      use_sim_time: True
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
@@ -228,7 +234,7 @@ global_costmap:
         enabled: true
         observation_sources: scan
         scan:
-          topic: <robot_namespace>/scan
+          topic: /<robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -248,7 +254,7 @@ global_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: <robot_namespace>/scan
+          topic: /<robot_namespace>/scan
           max_obstacle_height: 2.0
           clearing: true
           marking: true
@@ -270,11 +276,13 @@ global_costmap:
 
 map_server:
   ros__parameters:
+    use_sim_time: True
     yaml_filename: "map.yaml"
     topic_name: /map
 
 map_saver:
   ros__parameters:
+    use_sim_time: True
     save_map_timeout: 5.0
     free_thresh_default: 0.25
     occupied_thresh_default: 0.65
@@ -282,32 +290,34 @@ map_saver:
 
 planner_server:
   ros__parameters:
+    use_sim_time: True
     expected_planner_frequency: 10.0
     planner_plugins: ["GridBased"]
     GridBased:
-      plugin: "nav2_navfn_planner::NavfnPlanner"
+      plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.5
       use_astar: false
       allow_unknown: true
 
 behavior_server:
   ros__parameters:
-    local_costmap_topic: <robot_namespace>/local_costmap/costmap_raw
-    local_footprint_topic: <robot_namespace>/local_costmap/published_footprint
-    global_costmap_topic: <robot_namespace>/global_costmap/costmap_raw
-    global_footprint_topic: <robot_namespace>/global_costmap/published_footprint
+    use_sim_time: True
+    local_costmap_topic: local_costmap/costmap_raw
+    local_footprint_topic: local_costmap/published_footprint
+    global_costmap_topic: global_costmap/costmap_raw
+    global_footprint_topic: global_costmap/published_footprint
     cycle_frequency: 10.0
     behavior_plugins: ["spin", "backup", "drive_on_heading", "wait", "assisted_teleop"]
     spin:
-      plugin: "nav2_behaviors::Spin" # In Iron and older versions, "/" was used instead of "::"
+      plugin: "nav2_behaviors/Spin" # In Iron and older versions, "/" was used instead of "/"
     backup:
-      plugin: "nav2_behaviors::BackUp" # In Iron and older versions, "/" was used instead of "::"
+      plugin: "nav2_behaviors/BackUp" # In Iron and older versions, "/" was used instead of "/"
     drive_on_heading:
-      plugin: "nav2_behaviors::DriveOnHeading" # In Iron and older versions, "/" was used instead of "::"
+      plugin: "nav2_behaviors/DriveOnHeading" # In Iron and older versions, "/" was used instead of "/"
     wait:
-      plugin: "nav2_behaviors::Wait" # In Iron and older versions, "/" was used instead of "::"
+      plugin: "nav2_behaviors/Wait" # In Iron and older versions, "/" was used instead of "/"
     assisted_teleop:
-      plugin: "nav2_behaviors::AssistedTeleop" # In Iron and older versions, "/" was used instead of "::"
+      plugin: "nav2_behaviors/AssistedTeleop" # In Iron and older versions, "/" was used instead of "/"
     local_frame: odom
     global_frame: map
     robot_base_frame: base_link
@@ -316,30 +326,32 @@ behavior_server:
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
     rotational_acc_lim: 3.2
-    enable_stamped_cmd_vel: true
-
+    enable_stamped_cmd_vel: false
+ 
 waypoint_follower:
   ros__parameters:
+    use_sim_time: True
     loop_rate: 20
     stop_on_failure: false
     waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
-      plugin: "nav2_waypoint_follower::WaitAtWaypoint"
+      plugin: "nav2_waypoint_follower/WaitAtWaypoint"
       enabled: true
       waypoint_pause_duration: 200
 
 collision_monitor:
   ros__parameters:
+    use_sim_time: True
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
-    cmd_vel_in_topic: "<robot_namespace>/cmd_vel_smoothed"
-    cmd_vel_out_topic: "<robot_namespace>/cmd_vel"
-    state_topic: "<robot_namespace>/collision_monitor_state"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
     transform_tolerance: 0.5
     source_timeout: 5.0
     base_shift_correction: true
     stop_pub_timeout: 2.0
-    enable_stamped_cmd_vel: true
+    enable_stamped_cmd_vel: false
     use_realtime_priority: false
     polygons: ["PolygonStop", "PolygonSlow", "FootprintApproach"]
     PolygonStop:
@@ -348,7 +360,7 @@ collision_monitor:
       action_type: "stop"
       min_points: 4
       visualize: true
-      polygon_pub_topic: "<robot_namespace>/polygon_stop"
+      polygon_pub_topic: "polygon_stop"
       enabled: true
     PolygonSlow:
       type: "polygon"
@@ -357,7 +369,7 @@ collision_monitor:
       min_points: 4
       slowdown_ratio: 0.3
       visualize: true
-      polygon_pub_topic: "<robot_namespace>/polygon_slowdown"
+      polygon_pub_topic: "polygon_slowdown"
       enabled: true
     PolygonLimit:
       type: "polygon"
@@ -367,12 +379,12 @@ collision_monitor:
       linear_limit: 0.4
       angular_limit: 0.5
       visualize: true
-      polygon_pub_topic: "<robot_namespace>/polygon_limit"
+      polygon_pub_topic: "polygon_limit"
       enabled: true
     FootprintApproach:
       type: "polygon"
       action_type: "approach"
-      footprint_topic: "<robot_namespace>/local_costmap/published_footprint"
+      footprint_topic: "local_costmap/published_footprint"
       time_before_collision: 2.0
       simulation_time_step: 0.02
       min_points: 6
@@ -384,7 +396,7 @@ collision_monitor:
       min_points: 6
       visualize: true
       enabled: False
-      polygon_pub_topic: "<robot_namespace>/velocity_polygon_stop"
+      polygon_pub_topic: "velocity_polygon_stop"
       velocity_polygons: ["rotation", "translation_forward", "translation_backward", "stopped"]
       holonomic: false
       rotation:
@@ -415,11 +427,12 @@ collision_monitor:
     scan:
       source_timeout: 0.2
       type: "scan"
-      topic: "<robot_namespace>/scan"
+      topic: "scan"
       enabled: true
 
 velocity_smoother:
   ros__parameters:
+    use_sim_time: True
     smoothing_frequency: 20.0
     scale_velocities: false
     feedback: "OPEN_LOOP"
@@ -429,7 +442,7 @@ velocity_smoother:
     velocity_timeout: 1.0
     max_accel: [2.5, 0.0, 3.2]
     max_decel: [-2.5, 0.0, -3.2]
-    odom_topic: "<robot_namespace>/odom"
+    odom_topic: /<robot_namespace>/odom
     odom_duration: 0.1
     use_realtime_priority: false
-    enable_stamped_cmd_vel: true
+    enable_stamped_cmd_vel: false
