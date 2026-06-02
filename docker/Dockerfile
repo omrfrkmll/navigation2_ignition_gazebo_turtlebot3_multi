@@ -34,8 +34,8 @@ RUN rosdep update
 WORKDIR /opt/ros2_ws
 RUN mkdir -p src && chmod -R a+rwx /opt/ros2_ws
 
-# Clone your repository into src
-RUN git clone https://github.com/arshadlab/tb3_multi_robot.git src/tb3_multi_robot -b master
+# Copy your local repository into src
+COPY . src/tb3_multi_robot
 
 # Install dependencies using rosdep
 RUN rosdep install --from-paths src --ignore-src -r -y

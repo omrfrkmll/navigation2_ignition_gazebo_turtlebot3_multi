@@ -23,6 +23,11 @@ Panels:
     Splitter Ratio: 0.3333333432674408
   - Class: nav2_rviz_plugins/Navigation 2
     Name: Navigation 2
+  - Class: rmf_visualization_rviz2_plugins/SchedulePanel
+    Finish: 600
+    Map: L1
+    Name: SchedulePanel
+    Topic: /rmf_visualization/parameters
 Visualization Manager:
   Class: ""
   Displays:
@@ -519,6 +524,54 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: waypoints
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: RMF Schedule Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /schedule_markers_ros
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: RMF Fleet Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /fleet_markers_ros
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: RMF Map Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /map_markers_ros
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: RMF Building Systems Markers
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /building_systems_markers_ros
       Value: true
   Enabled: true
   Global Options:
