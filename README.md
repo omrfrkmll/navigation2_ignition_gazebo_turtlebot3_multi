@@ -1,9 +1,9 @@
 
-# Navigation2 Ignition Gazebo TurtleBot3 Multi (ROS 2 Humble)
+# Navigation2 Ignition Gazebo TurtleBot3 Multi with Open-RMF Integration (ROS 2 Humble)
 
-This repository provides a scalable ROS 2 Humble framework to simulate multiple TurtleBot3 robots in **Gazebo Sim (Ignition/Harmonic)** with Navigation2 (Nav2) support. Each robot runs within its own namespace, enabling clean separation and interaction-free operation.
+This repository provides a scalable ROS 2 Humble framework to simulate multiple TurtleBot3 robots in **Gazebo Sim (Ignition/Harmonic)** with Navigation2 (Nav2) and **Open-RMF (Robotics Middleware Framework)** integration.
 
-This project is a modernized re-implementation of the multi-robot concept, specifically backported and optimized for ROS 2 Humble using the latest Gazebo Sim architecture.
+This branch (`rmf-integration`) implements a fully operational Open-RMF fleet adapter for the TurtleBot3 fleet, enabling dynamic scheduling, task dispatching, and conflict-free trajectory management.
 
 ## 📜 Credits & Acknowledgments
 This project is based on and inspired by the excellent work of **Arshad Mehmood**. 
@@ -36,7 +36,8 @@ apt-get update && apt-get install -y \
     python3-vcstool \
     curl \
     ros-humble-rmw-implementation \
-    ros-humble-rmw-cyclonedds-cpp
+    ros-humble-rmw-cyclonedds-cpp \
+    ros-humble-rmf-dev
 ```
 
 When launching multiple robots with Nav2, the number of DDS participants can quickly exceed the default limit set by CycloneDDS. To avoid participant ID exhaustion, create a configuration file to increase the allowable range:
@@ -396,6 +397,54 @@ Despite the namespace, the resulting RViz instance still subscribes to /tf and /
 In a multi-robot configuration, where each robot is designed to operate with an isolated TF tree, remapping /tf to tf (a relative topic) ensures proper namespacing. This approach prevents conflicts and guarantees that TF messages remain within the intended robot scope.
 
 Such remapping is also necessary in other components (e.g., Nav2) that instantiate their own transform listeners. Applying consistent remapping avoids unintended cross-robot data mixing and supports clean separation of transform data across all robot instances.
+
+# 🌐 Open-RMF Fleet Integration & Execution
+
+On the `rmf-integration` branch, the workspace compiles two packages:
+1. `tb3_multi_robot`: Core multi-robot simulation and Nav2 stacks.
+2. `tb3_rmf`: Fleet adapter, task dispatcher, coordinate transformers, and RMF launch wrappers.
+
+### 1. Compile the RMF Workspace
+Make sure you have sourced ROS 2 Humble, then compile:
+```bash
+colcon build --symlink-install
+source install/setup.bash
+```
+
+### 2. Launch RMF Simulation
+This command starts Gazebo Sim, spawns the robots, brings up the Nav2 stack for all robots, starts the Open-RMF schedule node/visualizer, launches RViz, and runs the coordinate transformer node:
+```bash
+ros2 launch tb3_rmf rmf_simulation.launch.py
+```
+
+> [!NOTE]
+> The RMF visualizer publishes schedule and map markers in RMF coordinates (meter-based grid). Our custom `rmf_marker_transformer` node automatically transforms and publishes these to ROS/Gazebo coordinates, aligning RMF paths and robot positions perfectly in RViz.
+
+### 3. Dispatching Tasks
+To send a navigation task to the fleet, open a new terminal (and source the workspace) then run:
+```bash
+# Dispatch a go_to_place task to the nearest free robot
+ros2 run tb3_rmf dispatch_task <waypoint_name>
+
+# Example: Send any robot to tb3_dock
+ros2 run tb3_rmf dispatch_task tb3_dock
+
+# Force dispatch a task to a specific robot (e.g., tb1)
+ros2 run tb3_rmf dispatch_task <waypoint_name> <robot_name>
+```
+
+Available waypoints on the demo map:
+- `tb1_dock`, `tb2_dock`, `tb3_dock`, `tb4_dock`
+- `tb1_start`, `tb2_start`, `tb3_start`, `tb4_start`
+- `tb1_end`, `tb2_end`, `tb3_end`, `tb4_end`
+
+### 4. Monitor Task Status
+To monitor the dispatched task status and parse the incoming JSON responses from the RMF Task API:
+```bash
+ros2 run tb3_rmf monitor_tasks
+```
+
+---
 
 # 📎 Note on Included Files
 
