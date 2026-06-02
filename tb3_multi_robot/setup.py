@@ -6,7 +6,7 @@ package_name = 'tb3_multi_robot'
 
 setup(
     name=package_name,
-    version='1.0.0',
+    version='2.2.6',
     packages=find_packages(where='.', include=['multi_robot_scripts', 'multi_robot_scripts.*']),
     package_dir={'': '.'},
     data_files=[
@@ -29,7 +29,7 @@ setup(
     maintainer='Arshad Mehmood',
     maintainer_email='arshadm78@yahoo.com',
     description='Multi-robot simulation using TurtleBot3 and Gazebo',
-    license='MIT',
+    license='Apache 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [

@@ -1,0 +1,17 @@
+name: tb3_world
+levels:
+  L1:
+    drawing:
+      filename: ../map/map.pgm
+    elevation: 0
+    vertices:
+      - [170, 194, 0, tb1_dock, {is_charger: [4, true], is_docking_waypoint: [4, true]}]
+      - [230, 194, 0, tb3_dock, {is_charger: [4, true], is_docking_waypoint: [4, true]}]
+      - [200, 194, 0, waypoint_middle, {is_parking: [4, true]}]
+    lanes:
+      - [0, 2, {bidirectional: [4, true], graph_idx: [2, 0]}]
+      - [2, 1, {bidirectional: [4, true], graph_idx: [2, 0]}]
+    measurements:
+      - [0, 1, {distance: [3, 3.0]}]
+    layers:
+      {}

@@ -1,0 +1,12 @@
+build/
+install/
+log/
+.git/
+scratch/
+*.log
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage

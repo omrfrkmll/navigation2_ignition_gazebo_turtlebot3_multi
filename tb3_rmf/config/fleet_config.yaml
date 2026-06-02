@@ -1,0 +1,37 @@
+# Fleet configuration for TurtleBot3 robots
+fleet_manager:
+  ip: "127.0.0.1"
+  port: 8000
+  user: "some_user"
+  password: "some_password"
+
+rmf_fleet_adapter:
+  fleet_name: "turtlebot3"
+  capacity: 2
+  vitals_check_period: 1.0
+  publish_fleet_state: 10.0
+  lift_station_check_period: 0.5
+  drain_battery_rate: 2.0
+  recharge_battery_rate: 10.0
+  thresh_battery_low: 20.0
+  thresh_battery_critical: 10.0
+  min_battery_capacity: 10.0
+  finishing_request: "nothing" # nothing, park, charge
+  node_names:
+    nav_graph_file: "0.yaml"
+  
+  robots:
+    tb1:
+      robot_config:
+        max_delay: 15.0
+      rmf_config:
+        robot_state_update_frequency: 10.0
+        start_waypoint: "tb1_dock"
+        charger_waypoint: "tb1_dock"
+    tb3:
+      robot_config:
+        max_delay: 15.0
+      rmf_config:
+        robot_state_update_frequency: 10.0
+        start_waypoint: "tb3_dock"
+        charger_waypoint: "tb3_dock"
